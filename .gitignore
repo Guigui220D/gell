@@ -1,0 +1,8 @@
+#code::blocks
+*.depend
+*.layout
+*.cbp
+
+#build
+bin
+obj
