@@ -17,18 +17,31 @@ char* which(char const* name, int* type)
         return "Built-in command";
     }
 
+    char* path;
+    if (which_executable(name, &path) > 0)
+    {
+        *type = 1;
+        return path;
+    }
+
+	return "Name not found";
+}
+
+int which_executable(char const* name, char** result)
+{
     if (!access(name, F_OK | X_OK))
     {
         char* real_path = realpath(name, NULL);
 
         if (!real_path)
         {
-            perror("Getting full path for which");
-            return "Error";
+            perror("Getting full path for which_executable");
+
+            return -1;
         }
 
-        *type = 1;
-        return real_path;
+        *result = real_path;
+        return 1;
     }
 
     const char* env = getenv("PATH");
@@ -48,8 +61,8 @@ char* which(char const* name, int* type)
 
 	    if (!access(path, F_OK | X_OK))
         {
-            *type = 1;
-            return path;
+            *result = path;
+            return 1;
         }
 
         free(path);
@@ -57,5 +70,5 @@ char* which(char const* name, int* type)
 		ptr = strtok(NULL, delim);
 	}
 
-	return "Name not found";
+	return 0;
 }

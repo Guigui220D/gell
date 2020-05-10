@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <string.h>
 #include <unistd.h>
+#include <signal.h>
 
 #include "built_in_commands.h"
 #include "exec_prog.h"
@@ -21,6 +22,8 @@ void process_input(char* line, size_t len);
 int main()
 {
     errno = 0;
+
+    init_exec_manager();
 
     greetings();
 
@@ -47,6 +50,10 @@ int main()
     }
 
     free (line);
+
+    end_exec_manager();
+
+    printf("\nExit.\n");
 
     return 0;
 }
@@ -140,6 +147,23 @@ void process_input(char* line, size_t len)
                     char* pwd = getcwd(NULL, 0);
                     printf("%s/\n", pwd);
                     free(pwd);
+                }
+                break;
+            case 4: //fork
+                {
+                    if (argc < 2)
+                    {
+                        printf("Please provide a command to fork.\n");
+                        break;
+                    }
+
+                    char* command;
+                    if (which_executable(argv[1], &command))
+                    {
+                        argv[1] = command;
+                        fork_prog((const char**)argv + 1);
+                        free(command);
+                    }
                 }
                 break;
             }
