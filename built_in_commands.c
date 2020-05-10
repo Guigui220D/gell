@@ -6,7 +6,8 @@ char const * const built_in_commands[] =
 {
     "exit",
     "which",
-    "cd"
+    "cd",
+    "pwd"
 };
 
 int find_built_in_command(char const * name, char const * * most_fitting_name)

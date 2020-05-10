@@ -4,26 +4,41 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <stdio.h>
+#include <signal.h>
+#include <stdio.h>
+
+pid_t current_pid;
+
+void sigint_handler(int signal)
+{
+    if (current_pid > 0)
+        kill(current_pid, SIGINT);
+
+    printf("\n");
+}
 
 int exec_prog(const char** argv)
 {
-    pid_t f = fork();
+    current_pid = fork();
 
-    if (f == -1)
+    if (current_pid == -1)
     {
         perror("Forking for program execution");
     }
 
-    if (f)
+    if (current_pid)
     {
+        signal(SIGINT, sigint_handler);
+
         int status;
 
-        if (waitpid(f, &status, 0) == -1)
+        if (waitpid(current_pid, &status, 0) == -1)
         {
             perror("Waiting for program to finish");
-            return -1;
+            status = -1;
         }
 
+        signal(SIGINT, SIG_DFL);
         return status;
     }
     else

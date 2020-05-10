@@ -17,6 +17,20 @@ char* which(char const* name, int* type)
         return "Built-in command";
     }
 
+    if (!access(name, F_OK | X_OK))
+    {
+        char* real_path = realpath(name, NULL);
+
+        if (!real_path)
+        {
+            perror("Getting full path for which");
+            return "Error";
+        }
+
+        *type = 1;
+        return real_path;
+    }
+
     const char* env = getenv("PATH");
     const char* delim = ":";
 

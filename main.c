@@ -96,7 +96,7 @@ void process_input(char* line, size_t len)
     {
     case 1: //Executable
         argv[0] = comment;
-        int return_code = exec_prog((const char**)argv);
+        exec_prog((const char**)argv);
         break;
 
     case 2: //Built-in command
@@ -134,6 +134,13 @@ void process_input(char* line, size_t len)
                 }
                 else
                     printf("Please provide a directory to go to.\n");
+                break;
+            case 3: //pwd
+                {
+                    char* pwd = getcwd(NULL, 0);
+                    printf("%s/\n", pwd);
+                    free(pwd);
+                }
                 break;
             }
         }
